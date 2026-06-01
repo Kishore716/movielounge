@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineLuxe — Premium Movie Lounge</title>
+    <meta name="description" content="Discover, organize, and compare your favorite movies and TV shows on CineLuxe. High-fidelity interface powered by the OMDB API.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header class="navbar" id="main-header">
+        <div class="nav-container">
+            <div class="logo-area" id="nav-logo">
+                <div class="logo-icon">
+                    <i data-lucide="clapperboard"></i>
+                </div>
+                <span class="logo-text">CINE<span>LUXE</span></span>
+            </div>
+            
+            <div class="search-nav-wrapper">
+                <div class="nav-search-bar">
+                    <i data-lucide="search" class="search-icon"></i>
+                    <input type="text" id="header-search-input" placeholder="Search movies, series..." autocomplete="off">
+                    <button id="clear-search-btn" class="clear-btn hide">
+                        <i data-lucide="x"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="nav-actions">
+                <button id="toggle-watchlist-btn" class="nav-btn" aria-label="View Watchlist">
+                    <i data-lucide="bookmark"></i>
+                    <span class="btn-text">Watchlist</span>
+                    <span id="watchlist-count" class="badge">0</span>
+                </button>
+                <button id="toggle-compare-mode-btn" class="nav-btn" aria-label="Toggle Compare Mode">
+                    <i data-lucide="columns-2"></i>
+                    <span class="btn-text">Compare</span>
+                    <span id="compare-count" class="badge">0</span>
+                </button>
+                <button id="nav-auth-btn" class="nav-btn btn-primary" aria-label="Account Login">
+                    <i data-lucide="user"></i>
+                    <span id="nav-auth-text" class="btn-text">Sign In</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-layout">
+        
+        <!-- Hero Spotlight Section -->
+        <section id="hero-spotlight" class="hero-section">
+            <div class="hero-backdrop" id="hero-backdrop-img"></div>
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+                <div class="spotlight-tag">
+                    <i data-lucide="sparkles"></i>
+                    <span>Spotlight Choice</span>
+                </div>
+                <h1 id="hero-title" class="hero-title">Loading Spotlight...</h1>
+                <div class="hero-meta">
+                    <span id="hero-year">2014</span>
+                    <span class="separator">•</span>
+                    <span id="hero-rating" class="hero-rating-pill">
+                        <i data-lucide="star"></i> <span id="hero-rating-val">8.6</span>
+                    </span>
+                    <span class="separator">•</span>
+                    <span id="hero-runtime">169 min</span>
+                    <span class="separator">•</span>
+                    <span id="hero-genre">Sci-Fi, Drama</span>
+                </div>
+                <p id="hero-plot" class="hero-plot">
+                    Loading plot summary...
+                </p>
+                <div class="hero-cta-group">
+                    <button id="hero-details-btn" class="btn btn-primary">
+                        <i data-lucide="info"></i> View Details
+                    </button>
+                    <button id="hero-watchlist-btn" class="btn btn-secondary">
+                        <i data-lucide="plus"></i> Add to Watchlist
+                    </button>
+                </div>
+            </div>
+        </section>
+        <!-- Search Results & Filters Section -->
+        <section class="explore-section" id="explore-movies">
+            <div class="explore-header">
+                <div class="section-title-wrapper">
+                    <h2 class="section-title" id="search-title">Trending Now</h2>
+                    <p class="section-subtitle" id="search-subtitle">Discover popular titles or search above</p>
+                </div>
+                
+                <!-- Filter Toolbar -->
+                <div class="filter-toolbar">
+                    <div class="filter-group">
+                        <label for="filter-type" class="filter-label">Type</label>
+                        <select id="filter-type" class="filter-select">
+                            <option value="">All Types</option>
+                            <option value="movie">Movies</option>
+                            <option value="series">TV Series</option>
+                            <option value="episode">Episodes</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="filter-year" class="filter-label">Year</label>
+                        <input type="number" id="filter-year" class="filter-input-year" placeholder="YYYY" min="1900" max="2030">
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="sort-by" class="filter-label">Sort By</label>
+                        <select id="sort-by" class="filter-select">
+                            <option value="default">Relevance</option>
+                            <option value="year-desc">Year (Newest)</option>
+                            <option value="year-asc">Year (Oldest)</option>
+                            <option value="title-asc">Title (A-Z)</option>
+                            <option value="title-desc">Title (Z-A)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Movies Grid -->
+            <div id="movies-grid" class="movies-grid">
+                <!-- Movie cards injected dynamically -->
+            </div>
+
+            <!-- Pagination Panel -->
+            <div id="pagination-panel" class="pagination-panel hide">
+                <button id="prev-page-btn" class="btn btn-icon-text" disabled>
+                    <i data-lucide="chevron-left"></i> Previous
+                </button>
+                <span id="page-indicator" class="page-indicator">Page 1 of 1</span>
+                <button id="next-page-btn" class="btn btn-icon-text">
+                    Next <i data-lucide="chevron-right"></i>
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Side-sliding Watchlist Drawer -->
+    <aside id="watchlist-drawer" class="drawer">
+        <div class="drawer-header">
+            <h3>My Watchlist</h3>
+            <button id="close-watchlist-btn" class="btn-close" aria-label="Close Watchlist">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+        <div class="drawer-content">
+            <div id="watchlist-empty-state" class="empty-state">
+                <i data-lucide="bookmark-minus" class="empty-icon"></i>
+                <p>Your watchlist is empty.</p>
+                <span>Add movies by clicking the bookmark icon on any card.</span>
+            </div>
+            <div id="watchlist-items-list" class="watchlist-items">
+                <!-- Items injected here -->
+            </div>
+        </div>
+    </aside>
+
+    <!-- Bottom Compare Drawer Bar -->
+    <aside id="compare-bar" class="compare-bar hide">
+        <div class="compare-bar-container">
+            <div class="compare-info">
+                <h4>Compare Titles</h4>
+                <p>Select up to two movies/shows to compare side-by-side.</p>
+            </div>
+            
+            <div class="compare-slots-wrapper">
+                <div class="compare-slot" id="compare-slot-1">
+                    <span class="slot-placeholder">Slot 1 Empty</span>
+                </div>
+                <div class="compare-vs">VS</div>
+                <div class="compare-slot" id="compare-slot-2">
+                    <span class="slot-placeholder">Slot 2 Empty</span>
+                </div>
+            </div>
+
+            <div class="compare-bar-actions">
+                <button id="trigger-comparison-btn" class="btn btn-primary" disabled>
+                    <i data-lucide="git-compare"></i> Compare Now
+                </button>
+                <button id="clear-compare-btn" class="btn btn-secondary">
+                    Clear All
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Movie Details Lightbox Modal -->
+    <div id="details-modal" class="modal-overlay hide">
+        <div class="modal-container">
+            <button id="close-details-btn" class="modal-close-btn" aria-label="Close Details">
+                <i data-lucide="x"></i>
+            </button>
+            <div class="modal-hero" id="modal-hero-bg">
+                <div class="modal-hero-overlay"></div>
+                <div class="modal-hero-content">
+                    <div class="modal-poster-wrap">
+                        <img id="modal-poster" src="" alt="Movie Poster">
+                    </div>
+                    <div class="modal-main-details">
+                        <span id="modal-type" class="badge-type">Movie</span>
+                        <h2 id="modal-title">Interstellar</h2>
+                        <div class="modal-stats">
+                            <span id="modal-year">2014</span>
+                            <span class="dot">•</span>
+                            <span id="modal-rated">PG-13</span>
+                            <span class="dot">•</span>
+                            <span id="modal-runtime">169 min</span>
+                        </div>
+                        <div class="modal-ratings-row" id="modal-ratings">
+                            <!-- Ratings badges will go here -->
+                        </div>
+                        <p class="modal-tagline" id="modal-tagline"></p>
+                        <div class="modal-actions-row" style="margin-top: 16px; display: flex; gap: 12px;">
+                            <button id="modal-watchlist-btn" class="btn btn-secondary btn-sm" style="padding: 8px 16px; font-size: 13px;">
+                                <i data-lucide="plus"></i> Add to Watchlist
+                            </button>
+                            <button id="modal-play-btn" class="btn btn-primary btn-sm" style="padding: 8px 16px; font-size: 13px; display: none;" aria-label="Play Now">
+                                <i data-lucide="play"></i> Watch Now
+                            </button>
+                            <button id="modal-compare-btn" class="btn btn-secondary btn-sm" style="padding: 8px 16px; font-size: 13px;">
+                                <i data-lucide="columns-2"></i> Compare
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-body-content">
+                <!-- Player container (hidden until used) -->
+                <div id="modal-player-container" class="modal-player-container hide">
+                    <div class="player-controls">
+                        <div class="player-selectors">
+                            <select id="player-season-select" class="player-select hide"></select>
+                            <select id="player-episode-select" class="player-select hide"></select>
+                        </div>
+                        <div id="player-loading" class="player-loading hide">Loading player…</div>
+                    </div>
+                    <div class="player-iframe-wrap">
+                        <iframe id="modal-player-iframe" class="player-iframe" src="" frameborder="0" referrerpolicy="origin" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                </div>
+                <div class="modal-details-grid">
+                    <div class="modal-info-column">
+                        <div class="detail-block">
+                            <h4>Plot Summary</h4>
+                            <p id="modal-plot">Plot details go here.</p>
+                        </div>
+                        <div class="detail-block grid-2-col">
+                            <div>
+                                <h4>Director</h4>
+                                <p id="modal-director">-</p>
+                            </div>
+                            <div>
+                                <h4>Writer</h4>
+                                <p id="modal-writer">-</p>
+                            </div>
+                        </div>
+                        <div class="detail-block">
+                            <h4>Cast</h4>
+                            <p id="modal-cast">-</p>
+                        </div>
+                    </div>
+                    
+                    <div class="modal-meta-column">
+                        <div class="meta-item">
+                            <span class="meta-label">Genre</span>
+                            <span class="meta-val" id="modal-genre">-</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Released</span>
+                            <span class="meta-val" id="modal-released">-</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Box Office</span>
+                            <span class="meta-val" id="modal-boxoffice">-</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Awards</span>
+                            <span class="meta-val" id="modal-awards">-</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Language</span>
+                            <span class="meta-val" id="modal-language">-</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Country</span>
+                            <span class="meta-val" id="modal-country">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Movie Comparison Modal -->
+    <div id="comparison-modal" class="modal-overlay hide">
+        <div class="modal-container comparison-container">
+            <button id="close-compare-modal-btn" class="modal-close-btn" aria-label="Close Comparison">
+                <i data-lucide="x"></i>
+            </button>
+            <div class="compare-modal-header">
+                <h2>Title Comparison</h2>
+                <p>Side-by-side technical breakdown</p>
+            </div>
+            <div class="compare-table-wrapper">
+                <table class="compare-table">
+                    <thead>
+                        <tr id="compare-table-header">
+                            <th>Criteria</th>
+                            <th id="compare-col-1-title" class="movie-header-col">Movie 1</th>
+                            <th id="compare-col-2-title" class="movie-header-col">Movie 2</th>
+                        </tr>
+                    </thead>
+                    <tbody id="compare-table-body">
+                        <!-- Filled dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login / Sign Up Glassmorphic Modal -->
+    <div id="auth-modal" class="modal-overlay hide">
+        <div class="modal-container auth-modal-container" style="max-width: 420px;">
+            <button id="close-auth-btn" class="modal-close-btn" aria-label="Close Authentication">
+                <i data-lucide="x"></i>
+            </button>
+            <div class="auth-tabs">
+                <button id="tab-login" class="auth-tab active">Login</button>
+                <button id="tab-signup" class="auth-tab">Sign Up</button>
+            </div>
+            
+            <div class="auth-form-wrapper">
+                <!-- Login Form -->
+                <form id="login-form" class="auth-form">
+                    <div class="form-group">
+                        <label for="login-username">Username</label>
+                        <input type="text" id="login-username" required placeholder="Enter username" autocomplete="username">
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" required placeholder="Enter password" autocomplete="current-password">
+                    </div>
+                    <div id="login-error-msg" class="auth-error-msg hide"></div>
+                    <button type="submit" class="btn btn-primary btn-block" style="width: 100%; justify-content: center; margin-top: 10px;">
+                        Sign In
+                    </button>
+                </form>
+
+                <!-- Signup Form -->
+                <form id="signup-form" class="auth-form hide">
+                    <div class="form-group">
+                        <label for="signup-username">Username</label>
+                        <input type="text" id="signup-username" required placeholder="Choose a username (min 3 chars)" autocomplete="username">
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-password">Password</label>
+                        <input type="password" id="signup-password" required placeholder="Choose a password (min 5 chars)" autocomplete="new-password">
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-confirm-password">Confirm Password</label>
+                        <input type="password" id="signup-confirm-password" required placeholder="Confirm your password" autocomplete="new-password">
+                    </div>
+                    <div id="signup-error-msg" class="auth-error-msg hide"></div>
+                    <button type="submit" class="btn btn-primary btn-block" style="width: 100%; justify-content: center; margin-top: 10px;">
+                        Create Account
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Glassy Toast Notification -->
+    <div id="toast" class="toast hide">
+        <i data-lucide="info" id="toast-icon"></i>
+        <span id="toast-message">Item added to watchlist!</span>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
