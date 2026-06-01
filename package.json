@@ -1,7 +1,7 @@
 {
   "name": "cineluxe-movie-lounge",
   "version": "1.0.0",
-  "description": "Premium movie website with MySQL auth backend - Vercel Ready",
+  "description": "Premium movie website with MySQL auth backend - Vercel Ready v2"
   "main": "server.js",
   "engines": {
     "node": "24.x"
